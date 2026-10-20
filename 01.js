@@ -5,7 +5,8 @@ import "./config/database.js"
 import publicStudentRouter from "./controllers/public/student.js"
 import authMiddleware from "./middleware/auth.js"
 import privateStudentRouter from "./controllers/private/student.js"
-
+import publiCourseRouter from "./controllers/public/course.js"
+import privateCourseRouter from "./controllers/private/course.js"
 
 const app = express()
 app.use(express.json())
@@ -20,8 +21,10 @@ app.get("/health", (req,res) =>{
 // app.post("")
 
 app.use("/student", publicStudentRouter)
+app.use("/course", publiCourseRouter)
 app.use(authMiddleware)
 app.use("/private-student", privateStudentRouter)
+app.use("/private-course", privateCourseRouter)
 
 app.listen(port, ()=>{
     console.log("server is runnning");
