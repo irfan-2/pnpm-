@@ -10,7 +10,7 @@ const studentSchema = new mongoose.Schema({
     rollNumber: {
         type: Number,
         required: true,
-        trim: true,
+        // trim: true,
         unique: true
     },
     email: {
@@ -25,7 +25,7 @@ const studentSchema = new mongoose.Schema({
         required: true,
         trim: true,
         minLength: 8,
-        maxLength: 20
+        maxLength: 100
     },
     age: {
         type: Number,
