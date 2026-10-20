@@ -18,7 +18,7 @@ const studentSchema = new mongoose.Schema({
         required: true,
         trim: true,
         unique: true,
-        Lowercase: true
+        lowercase: true
     },
     password: {
         type: String,
@@ -30,7 +30,7 @@ const studentSchema = new mongoose.Schema({
     age: {
         type: Number,
         required: true,
-        trim: true
+        // trim: true
     },
     gender: {
         type: String,
