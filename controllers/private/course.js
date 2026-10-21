@@ -9,6 +9,11 @@ router.post("/create-course", async (req, res) => {
         let checkIfExists = await courseModel.findOne({code: courseDetails.code});
         if(checkIfExists)
         {
+              if(checkIfExists.isActive == false){
+                return res.status(400).json({
+                    "msg" : `course with Code ${courseDetails.Code} alreaedy exists and is currently inactive`
+                })
+            }
             return res.status(400).json({message: `A course with course code ${courseDetails.code} already exists`});
         }
         let creation = await courseModel.create(courseDetails);
@@ -46,6 +51,7 @@ router.patch("/delete-course/:code", async (req, res) => {
         let checkIfExists = await courseModel.findOne({code: courseCode});
         if(!checkIfExists)
         {
+          
             return res.status(404).json({message: `Course with course code ${courseCode} does not exists`});
         }
         let deletedCourse = await courseModel.findOneAndUpdate({code: courseCode}, { $set: {isActive: false }});
