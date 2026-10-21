@@ -11,7 +11,7 @@ router.post("/create-course", async (req, res) => {
         {
               if(checkIfExists.isActive == false){
                 return res.status(400).json({
-                    "msg" : `course with Code ${courseDetails.Code} alreaedy exists and is currently inactive`
+                    "msg" : `course with Code ${courseDetails.code} alreaedy exists and is currently inactive`
                 })
             }
             return res.status(400).json({message: `A course with course code ${courseDetails.code} already exists`});
@@ -37,7 +37,9 @@ router.patch("/update-course/:code", async (req, res) => {
         {
             return res.status(401).json({message: "You cannot update a course code"});
         }
-        let operation = await courseModel.findOneAndUpdate({code: courseCode}, { $set: changes }, {new: true});
+        
+        let operation = await courseModel.findOneAndUpdate({code: courseCode},
+             { $set: changes }, {new: true}).select("title code fee instructor duration -_id");;
         res.status(200).json({message: "Course updated successfully", operation});
     } catch (error) {
         console.error(error.message);
@@ -61,5 +63,73 @@ router.patch("/delete-course/:code", async (req, res) => {
         res.status(500).json({message: "Internal Server Error",error: error.message});
     }
 });
+
+router.patch("/restore-course/:code", async (req,res) =>{
+    try {
+        let courseCode = req.params.code
+        let checkIfExists = await courseModel.findOne({code: courseCode})
+        if(!checkIfExists){
+        return res.status(404).json({
+         message: `Course with course code ${courseCode} does not exists`
+        });         
+      }
+
+      if(checkIfExists.isActive == true){
+        return res.status(400).json({
+            "msg" : `course with code ${checkIfExists.code} is already active !`
+        })
+      }
+
+
+        let restoredCourse = await courseModel.findOneAndUpdate(
+            {code: courseCode,},
+            {$set: {isActive: true}},
+            {new: true}
+        );
+
+        res.status(200).json({
+            msg: "Course restored successfully",
+            restoredCourse
+        });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({message: "Internal Server Error",error: error.message});
+    }
+})
+
+router.patch("/add-tags/:code" , async (req,res) =>{
+    try {
+        let courseCode = req.params.code 
+        let {tags} = req.body
+
+        let checkIfExists = await courseModel.findOne({
+            code: courseCode
+        })
+
+         if (!checkIfExists) {
+            return res.status(404).json({
+                message: "Course not found or inactive"
+            });
+        }
+
+    let updatedCourse = await courseModel.findOneAndUpdate(
+        {code: courseCode},
+        {$addToSet: {tags: {$each: tags}}},
+        {returnDocument: "after"}
+    ).select("title code tags -_id")
+
+    res.status(200).json({
+            message: "Tags added successfully",
+            updatedCourse
+        });
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({
+            "msg" : "internal server error"
+        })
+    }
+})
 
 export default router;
