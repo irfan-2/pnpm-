@@ -67,6 +67,26 @@ let updateStudentValidator = [
         .isNumeric().withMessage("Age must be a number"),
 ]
 
+let changeStudentPasswordValidator = [
+    body("oldPassword")
+    .trim()
+    .notEmpty()
+    .withMessage("password is required")
+    .isLength({ min: 6, max: 12 })
+    .withMessage(
+                  "Password must be atleast 6 characters and maximum 12 characters",
+    ),
+
+    body("newPassword")
+    .trim()
+    .notEmpty()
+    .withMessage("password is required")
+    .isLength({ min: 6, max: 12 })
+    .withMessage(
+                  "Password must be atleast 6 characters and maximum 12 characters",
+    ),
+]
+
 async function validation(req,res,next){
     try {
         let errors = await validationResult(req)
