@@ -132,4 +132,44 @@ router.patch("/add-tags/:code" , async (req,res) =>{
     }
 })
 
+router.patch("/remove-tags/:code", async (req,res) =>{
+    try {
+        let courseCode = req.params.code 
+        let {tags} = req.body
+
+        let course = await courseModel.findOne({code: courseCode, isActive: true})
+
+        if(!course){
+            return res.status(404).json({
+                "msg" : "course not found or inactive"
+            })
+        }
+
+        if(!Array.isArray(tags) || tags.length == 0){
+            return res.status(400).json({
+                msg : "please provide tags in an array"
+            })
+        }
+
+        let operation = await courseModel.findOneAndUpdate(
+            {code: courseCode, isActive: true},
+            {$pull : {tags: {$in : tags}}},
+            {new: true}
+        ).select("title code tags -_id")
+
+        res.status(200).json({
+            "msg" : "tags removed successfully",
+            operation
+        })
+
+    } catch (error) {
+         console.log(error.message);
+        res.status(500).json({
+            "msg" : "internal server error"
+        })
+    }
+})
+
+
+
 export default router;
