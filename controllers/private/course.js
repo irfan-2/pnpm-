@@ -1,9 +1,11 @@
 import express from "express";
 import courseModel from "../../models/Course.js";
+import { createCourseValidator, updateCouseValidator } from "../../validators/courseValidator.js";
+import { validation } from "../../validators/studentValidator.js";
 
 const router = express.Router();
 
-router.post("/create-course", async (req, res) => {
+router.post("/create-course",createCourseValidator, validation, async (req, res) => {
     try {
         let courseDetails = req.body;
         let checkIfExists = await courseModel.findOne({code: courseDetails.code});
@@ -24,7 +26,7 @@ router.post("/create-course", async (req, res) => {
     }
 });
 
-router.patch("/update-course/:code", async (req, res) => {
+router.patch("/update-course/:code",updateCouseValidator, validation, async (req, res) => {
     try {
         let courseCode = req.params.code;
         let checkIfExists = await courseModel.findOne({code: courseCode, isActive: true});
