@@ -219,4 +219,39 @@ router.patch("/restore/:id", async (req, res) => {
     }
 });
 
+router.get("/withdrawn-enrollments", async (req, res) => {
+    try {
+        let studentId = req.user.id;
+
+        let withdrawn = await enrollmentModel
+            .find({
+                student_id: studentId,
+                status: "withdrawn"
+            })
+            .populate("course_id", "title code instructor fee -_id")
+            .select("course_id status enrolledAt -_id");
+
+        if (withdrawn.length === 0) {
+            return res.status(200).json({
+                msg: "No withdrawn enrollments found",
+                count: 0,
+                withdrawn: []
+            });
+        }
+
+        res.status(200).json({
+            msg: "withdrawn enrollments fetched successfully",
+            count: withdrawn.length,
+            withdrawn
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            msg: "Internal server error"
+        });
+    }
+});
+
 export default router
