@@ -205,12 +205,6 @@ router.patch("/restore/:id", async (req, res) => {
             }
         ).select("student_id course_id status enrolledAt -_id");
 
-        if (!operation) {
-            return res.status(409).json({
-                msg: "Enrollment status has changed. Please try again"
-            });
-        }
-
         res.status(200).json({
             msg: "Enrollment restored successfully",
             operation
