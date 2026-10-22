@@ -96,4 +96,77 @@ router.get("/get-all", async (req,res) =>{
     }
 })
 
+
+router.get("/my-courses", async(req,res) =>{
+    try {
+       let id = req.user.id;
+
+        const enrollments = await enrollmentModel
+            .find({ student_id: id })
+            .populate("course_id", "title code instructor fee duration tags -_id");
+
+        const courses = enrollments
+            .map(enrollment => enrollment.course_id)
+            .filter(course => course !== null);
+
+        return res.status(200).json({
+            msg: "Courses fetched successfully",
+            count: courses.length,
+            courses
+        });
+
+
+    } catch (error) {
+         console.log(error);
+        res.status(500).json({
+            "msg" : "internal server error"
+        })
+    }
+})
+
+router.patch("/cancel/:id", async (req, res) => {
+    try {
+        let studentId = req.user.id;
+        let enrollmentId = req.params.id;
+
+        let enrollment = await enrollmentModel.findOne({
+            _id: enrollmentId,
+            student_id: studentId
+        });
+
+        if (!enrollment) {
+            return res.status(404).json({
+                msg: "Enrollment not found"
+            });
+        }
+
+        if (enrollment.status === "withdrawn") {
+            return res.status(400).json({
+                msg: "Enrollment is already withdrawn"
+            });
+        }
+
+        let operation = await enrollmentModel.findOneAndUpdate(
+            {
+                _id: enrollmentId,
+                student_id: studentId
+            },
+            { $set: { status: "withdrawn" } },
+            { new : true }
+        ).select("student_id course_id status enrolledAt -_id");
+
+        res.status(200).json({
+            msg: "Enrollment withdrawn successfully",
+            operation
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            msg: "Internal server error"
+        });
+    }
+});
+
 export default router
