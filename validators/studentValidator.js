@@ -31,6 +31,22 @@ let registerValidator = [
     .isAlpha().withMessage("Gender must be alphabets"),
 ]
 
+let loginValidator = [
+        body("email").trim()
+        .isEmail().withMessage("Enter a valid email")
+        .notEmpty().withMessage("Email ID is required"),
+
+        body("password")
+            .trim()
+            .notEmpty()
+            .withMessage("password is required")
+            .isLength({ min: 6, max: 12 })
+            .withMessage(
+                  "Password must be atleast 6 characters and maximum 12 characters",
+            ),
+
+]
+
 async function validation(req,res,next){
     try {
         let errors = await validationResult(req)
@@ -44,4 +60,4 @@ async function validation(req,res,next){
     }
 }
 
-export {registerValidator, validation}
+export {registerValidator,loginValidator,updateStudentValidator, validation}

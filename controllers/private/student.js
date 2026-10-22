@@ -2,6 +2,7 @@ import express from "express"
 import studentModel from "../../models/Student.js"
 import bcrypt from "bcrypt"
 import enrollmentModel from "../../models/Enrollment.js"
+import { updateStudentValidator, validation } from "../../validators/studentValidator.js"
 
 const router = express.Router()
 
@@ -29,7 +30,7 @@ router.get("/profile", async (req,res) =>{
     }
 })
 
-router.patch("/update", async (req,res) =>{
+router.patch("/update",updateStudentValidator, validation, async (req,res) =>{
     try {
         let id = req.user.id
         let student = await studentModel.findById(id)

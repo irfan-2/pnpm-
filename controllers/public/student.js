@@ -2,10 +2,11 @@ import express from "express"
 import bcrypt from "bcrypt"
 import studentModel from "../../models/Student.js"
 import tokenize from "../../utils/token.js"
+import { loginValidator, registerValidator, validation } from "../../validators/studentValidator.js"
 
 const router = express.Router()
 
-router.post("/register", async (req,res) =>{
+router.post("/register",registerValidator,validation, async (req,res) =>{
     try {
         let {name, rollNumber, email,password, age, gender} = req.body
         let checkIfExists = await studentModel.findOne({ email: email})
@@ -34,7 +35,7 @@ router.post("/register", async (req,res) =>{
     }
 })
 
-router.post("/login", async (req,res) =>{
+router.post("/login",loginValidator,validation, async (req,res) =>{
     try {
         let {email, password} = req.body
         let checkIfExists = await studentModel.findOne({
