@@ -90,7 +90,7 @@ let changeStudentPasswordValidator = [
 async function validation(req,res,next){
     try {
         let errors = await validationResult(req)
-        if(!error.isEmpty()){
+        if(!errors.isEmpty()){
             res.status(400).json(errors)
         }
         next()

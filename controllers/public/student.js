@@ -60,7 +60,7 @@ router.post("/login",loginValidator,validation, async (req,res) =>{
             "msg" : "logged in successfully", token
         })
     } catch (error) {
-          console.error(error.message);
+          console.error(error);
         res.status(500).json({message: "Internal Server Error",error: error.message});
     }
 })
