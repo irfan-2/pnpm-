@@ -1,6 +1,7 @@
 import express from "express"
 import studentModel from "../../models/Student.js"
 import bcrypt from "bcrypt"
+import enrollmentModel from "../../models/Enrollment.js"
 
 const router = express.Router()
 
@@ -153,6 +154,33 @@ router.patch("/deactivate-student", async (req,res) =>{
 
     } catch (error) {
         console.log(error);
+        res.status(500).json({
+            "msg" : "internal server error"
+        })
+    }
+})
+
+router.get("/my-courses", async(req,res) =>{
+    try {
+       let id = req.user.id;
+
+        const enrollments = await enrollmentModel
+            .find({ student_id: id })
+            .populate("course_id", "title code instructor fee duration tags -_id");
+
+        const courses = enrollments
+            .map(enrollment => enrollment.course_id)
+            .filter(course => course !== null);
+
+        return res.status(200).json({
+            msg: "Courses fetched successfully",
+            count: courses.length,
+            courses
+        });
+
+
+    } catch (error) {
+         console.log(error);
         res.status(500).json({
             "msg" : "internal server error"
         })
