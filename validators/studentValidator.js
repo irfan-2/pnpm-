@@ -10,23 +10,34 @@ let registerValidator = [
         .isEmail().withMessage("Enter a valid email")
         .notEmpty().withMessage("Email ID is required"),
 
-    body("password").trim()
+    body("age").trim()
         .notEmpty().withMessage("age is required")
         .isNumeric().withMessage("Age must be a number"),
 
     body("rollNumber").trim()
         .notEmpty().withMessage("Rollnumber is required")
         .isNumeric().withMessage("rollNumber must be a number"),
+
+    body("password")
+            .trim()
+            .notEmpty()
+            .withMessage("password is required")
+            .isLength({ min: 6, max: 12 })
+            .withMessage(
+                  "Password must be atleast 6 characters and maximum 12 characters",
+            ),
     
-    
+    body("gender").trim()
+    .isAlpha().withMessage("Gender must be alphabets"),
 ]
 
 async function validation(req,res,next){
     try {
         let errors = await validationResult(req)
-        if(!error.isEmail()){
+        if(!error.isEmpty()){
             res.status(400).json(errors)
         }
+        next()
     } catch (error) {
         console.log(error.message);
         
