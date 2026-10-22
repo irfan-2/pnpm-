@@ -169,4 +169,60 @@ router.patch("/cancel/:id", async (req, res) => {
     }
 });
 
+router.patch("/restore/:id", async (req, res) => {
+    try {
+        let studentId = req.user.id;
+        let enrollmentId = req.params.id;
+
+        let enrollment = await enrollmentModel.findOne({
+            _id: enrollmentId,
+            student_id: studentId
+        });
+
+        if (!enrollment) {
+            return res.status(404).json({
+                msg: "Enrollment not found"
+            });
+        }
+
+        if (enrollment.status !== "cancelled") {
+            return res.status(400).json({
+                msg: "Only cancelled enrollments can be restored"
+            });
+        }
+
+        let operation = await enrollmentModel.findOneAndUpdate(
+            {
+                _id: enrollmentId,
+                student_id: studentId,
+                status: "cancelled"
+            },
+            {
+                $set: { status: "enrolled" }
+            },
+            {
+                new : true
+            }
+        ).select("student_id course_id status enrolledAt -_id");
+
+        if (!operation) {
+            return res.status(409).json({
+                msg: "Enrollment status has changed. Please try again"
+            });
+        }
+
+        res.status(200).json({
+            msg: "Enrollment restored successfully",
+            operation
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            msg: "Internal server error"
+        });
+    }
+});
+
 export default router
