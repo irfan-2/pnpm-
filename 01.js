@@ -8,6 +8,8 @@ import privateStudentRouter from "./controllers/private/student.js"
 import publiCourseRouter from "./controllers/public/course.js"
 import privateCourseRouter from "./controllers/private/course.js"
 import privateEnrollmentRouter from "./controllers/private/enrollment.js"
+import publicAggregateRouter from "./controllers/public/aggregate.js"
+import privateAggregateRouter from "./controllers/private/aggregate.js"
 
 const app = express()
 app.use(express.json())
@@ -23,10 +25,13 @@ app.get("/health", (req,res) =>{
 
 app.use("/student", publicStudentRouter)
 app.use("/course", publiCourseRouter)
+app.use("/aggregate", publicAggregateRouter)
 app.use(authMiddleware)
 app.use("/private-student", privateStudentRouter)
 app.use("/private-course", privateCourseRouter)
 app.use("/private-enrollment", privateEnrollmentRouter)
+app.use("/private-aggregate", privateAggregateRouter)
+
 
 app.listen(port, ()=>{
     console.log("server is runnning");
