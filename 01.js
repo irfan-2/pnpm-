@@ -21,8 +21,6 @@ app.get("/health", (req,res) =>{
     })
 })
 
-// app.post("")
-
 app.use("/student", publicStudentRouter)
 app.use("/course", publiCourseRouter)
 app.use("/aggregate", publicAggregateRouter)

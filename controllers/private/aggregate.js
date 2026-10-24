@@ -66,6 +66,9 @@ router.get("/aggregate/my-courses", async (req, res) => {
                     from: "courses",
                     localField: "course_id",
                     foreignField: "_id",
+                    pipeline: [
+                        
+                    ],
                     as: "courseDetails"
                 }
             },
